@@ -73,7 +73,7 @@
     </header>
 
     <div class="filter-bar">
-        <select class="filter-select" id="categoryFilter" onchange="filterProducts()">
+        <select class="filter-select" id="categoryFilter" onchange="onCategoryChange()">
             <option value="all">All Categories</option>
             <option value="Drinks">Drinks</option>
             <option value="Chocolates">Chocolates</option>
@@ -134,7 +134,7 @@
                     };
                 });
 
-                populateBrandFilter(products);
+                populateBrandFilter('all');
                 renderProducts(products);
             } catch (error) {
                 document.getElementById('products-container').innerText = "Failed to synchronize product database.";
@@ -142,20 +142,27 @@
             }
         }
 
-        // Build the brand dropdown dynamically from the CSV every time the page loads
-        function populateBrandFilter(items) {
+        // Build the brand dropdown dynamically from the CSV every time the page loads.
+        // If a category is given, only brands that have products in that category are listed.
+        function populateBrandFilter(category) {
             const brandSelect = document.getElementById('brandFilter');
+            const previousSelection = brandSelect.value;
 
-            // Reset to only the default "All Brands" option (clears any stale entries)
-            brandSelect.innerHTML = '<option value="all">All Brands</option>';
+            // Only consider products in the selected category (or all if "all")
+            const relevant = (category && category !== 'all')
+                ? products.filter(p => p.category === category)
+                : products;
 
-            // Collect unique, non-empty brand names from the CSV
+            // Collect unique, non-empty brand names from those products
             const brands = [...new Set(
-                items.map(p => p.brand).filter(b => b && b.length > 0)
+                relevant.map(p => p.brand).filter(b => b && b.length > 0)
             )];
 
             // Sort alphabetically (case-insensitive) for a tidy list
             brands.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+            // Reset to only the default "All Brands" option (clears any stale entries)
+            brandSelect.innerHTML = '<option value="all">All Brands</option>';
 
             brands.forEach(brand => {
                 const option = document.createElement('option');
@@ -163,6 +170,17 @@
                 option.textContent = brand;
                 brandSelect.appendChild(option);
             });
+
+            // Keep the previously selected brand if it still exists in the new list,
+            // otherwise fall back to "All Brands".
+            brandSelect.value = brands.includes(previousSelection) ? previousSelection : 'all';
+        }
+
+        // When the category changes, rebuild the brand list to match, then re-filter.
+        function onCategoryChange() {
+            const category = document.getElementById('categoryFilter').value;
+            populateBrandFilter(category);
+            filterProducts();
         }
 
         function filterProducts() {
@@ -338,5 +356,5 @@
 
         window.onload = loadProducts;
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a12e1afe2ae2e309',t:'MTc4MjY2NDUzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
