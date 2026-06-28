@@ -24,11 +24,37 @@
         .pdf-btn:hover { background: #0062cc; }
 
         /* Filter Controls */
-        .filter-bar { max-width: 1200px; margin: 0 auto 25px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .filter-bar { display: flex; gap: 15px; flex-wrap: wrap; }
         .filter-select { padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; background-color: white; cursor: pointer; min-width: 200px; flex-grow: 1; }
 
-        .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px; }
-        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+        /* DESKTOP LAYOUT: filter bar spans the full width on top, then
+           products on the left and the cart panel on the right. */
+        .main-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2.5fr 1fr;
+            grid-template-areas:
+                "filter filter"
+                "products cart";
+            gap: 20px;
+        }
+        .filter-bar { grid-area: filter; margin-bottom: 5px; }
+        .products-grid { grid-area: products; }
+        .cart-panel { grid-area: cart; }
+
+        /* MOBILE LAYOUT: single column, with the cart panel pulled to the very
+           top (above the selection bar), then the filters, then the products. */
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "cart"
+                    "filter"
+                    "products";
+            }
+            .cart-panel { position: static; }
+        }
         
         /* Layout Grid */
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; align-content: start; }
@@ -72,21 +98,21 @@
         <button class="pdf-btn" onclick="downloadPDF()">📄 Download PDF Catalogue</button>
     </header>
 
-    <div class="filter-bar">
-        <select class="filter-select" id="categoryFilter" onchange="onCategoryChange()">
-            <option value="all">All Categories</option>
-            <option value="Drinks">Drinks</option>
-            <option value="Chocolates">Chocolates</option>
-            <option value="Candies">Candies</option>
-            <option value="Snacks">Snacks</option>
-        </select>
-        
-        <select class="filter-select" id="brandFilter" onchange="filterProducts()">
-            <option value="all">All Brands</option>
-        </select>
-    </div>
+    <div class="main-layout">
+        <div class="filter-bar">
+            <select class="filter-select" id="categoryFilter" onchange="onCategoryChange()">
+                <option value="all">All Categories</option>
+                <option value="Drinks">Drinks</option>
+                <option value="Chocolates">Chocolates</option>
+                <option value="Candies">Candies</option>
+                <option value="Snacks">Snacks</option>
+            </select>
+            
+            <select class="filter-select" id="brandFilter" onchange="filterProducts()">
+                <option value="all">All Brands</option>
+            </select>
+        </div>
 
-    <div class="container">
         <div class="products-grid" id="products-container">Loading catalog inventory...</div>
 
         <div class="cart-panel">
@@ -356,5 +382,5 @@
 
         window.onload = loadProducts;
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a12e1afe2ae2e309',t:'MTc4MjY2NDUzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
