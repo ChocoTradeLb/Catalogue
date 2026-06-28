@@ -46,6 +46,11 @@
         .products-grid { grid-area: products; }
         .cart-panel { grid-area: cart; }
 
+        /* Mobile slim total bar — hidden on desktop by default. This MUST come
+           BEFORE the media query below, otherwise (being a later same-specificity
+           rule) it would override the media query and the bar would never show. */
+        .mobile-total-bar { display: none; }
+
         /* MOBILE LAYOUT: single column, with the cart panel pulled to the very
            top (above the selection bar), then the filters, then the products. */
         @media (max-width: 900px) {
@@ -118,15 +123,13 @@
         .send-btn:hover { background: #20ba5a; }
         .empty-text { color: #888; font-style: italic; text-align: center; margin: 20px 0; }
 
-        /* Mobile slim total bar — hidden on desktop, shown only on small screens */
-        .mobile-total-bar { display: none; }
     </style>
 </head>
 <body>
 
     <header>
         <div>
-            <h1>Wholesale Hub <span style="background:#ff3b30;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:4px;vertical-align:middle;">v3 · NEW</span></h1>
+            <h1>Wholesale Hub <span style="background:#25D366;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:4px;vertical-align:middle;">v4 · FIXED</span></h1>
             <p>Add products to your order summary and submit via WhatsApp</p>
         </div>
         <button class="pdf-btn" onclick="downloadPDF()">📄 Download PDF Catalogue</button>
@@ -429,5 +432,5 @@
 
         window.onload = loadProducts;
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a12e9df60babe30b',t:'MTc4MjY2OTg5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a12ebb923b22e30c',t:'MTc4MjY3MTExMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
