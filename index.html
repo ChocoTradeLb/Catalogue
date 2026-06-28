@@ -53,7 +53,35 @@
                     "filter"
                     "products";
             }
+            /* Cart panel scrolls away naturally with the page (no longer sticky),
+               so it doesn't cover the screen while scrolling. It's still at the
+               very top when scrolled back up. */
             .cart-panel { position: static; }
+
+            /* Leave room at the bottom so the fixed total bar never hides content */
+            body { padding-bottom: 80px; }
+
+            /* Slim fixed bottom bar with just the total + send button */
+            .mobile-total-bar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 12px 16px;
+                border-top: 1px solid var(--border);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                z-index: 1000;
+            }
+            .mobile-total-info { display: flex; flex-direction: column; line-height: 1.2; }
+            .mobile-total-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+            .mobile-total-amount { font-size: 1.3rem; font-weight: bold; color: #111; }
+            .mobile-send-btn { background: var(--primary); color: white; border: none; padding: 12px 22px; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; white-space: nowrap; }
+            .mobile-send-btn:active { background: #20ba5a; }
         }
         
         /* Layout Grid */
@@ -86,6 +114,9 @@
         .send-btn { display: block; width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; text-align: center; }
         .send-btn:hover { background: #20ba5a; }
         .empty-text { color: #888; font-style: italic; text-align: center; margin: 20px 0; }
+
+        /* Mobile slim total bar — hidden on desktop, shown only on small screens */
+        .mobile-total-bar { display: none; }
     </style>
 </head>
 <body>
@@ -124,6 +155,16 @@
             </div>
             <button class="send-btn" onclick="sendOrder()">Send Order via WhatsApp</button>
         </div>
+    </div>
+
+    <!-- Mobile-only slim total bar fixed at the bottom of the screen.
+         Shows just the grand total + a send button while scrolling. -->
+    <div class="mobile-total-bar" id="mobileTotalBar">
+        <div class="mobile-total-info">
+            <span class="mobile-total-label">Cart Total</span>
+            <span class="mobile-total-amount" id="mobile-total-amount">$0.00</span>
+        </div>
+        <button class="mobile-send-btn" onclick="sendOrder()">Send Order</button>
     </div>
 
     <script>
@@ -286,10 +327,12 @@
         function updateCartUI() {
             const container = document.getElementById('cart-items');
             const totalSpan = document.getElementById('cart-total-amount');
+            const mobileTotalSpan = document.getElementById('mobile-total-amount');
             
             if (cart.length === 0) {
                 container.innerHTML = '<p class="empty-text">No items selected</p>';
                 totalSpan.innerText = '$0.00';
+                mobileTotalSpan.innerText = '$0.00';
                 return;
             }
 
@@ -316,6 +359,7 @@
             });
 
             totalSpan.innerText = `$${grandTotal.toFixed(2)}`;
+            mobileTotalSpan.innerText = `$${grandTotal.toFixed(2)}`;
         }
 
         function sendOrder() {
@@ -382,5 +426,5 @@
 
         window.onload = loadProducts;
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a12e6d04cf7ae30b',t:'MTc4MjY2Nzg5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
