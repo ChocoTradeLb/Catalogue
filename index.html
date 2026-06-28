@@ -114,7 +114,12 @@
         .add-btn:hover { background: #000; }
 
         /* Cart Styles */
-        .cart-panel { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border); height: fit-content; position: sticky; top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .cart-panel { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border); height: fit-content; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* Stick the cart panel only on desktop. On mobile it stays static and
+           scrolls away (handled by default, no later rule overrides it). */
+        @media (min-width: 901px) {
+            .cart-panel { position: sticky; top: 20px; }
+        }
         .cart-title { border-bottom: 2px solid var(--light); padding-bottom: 10px; margin-bottom: 15px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--border); font-size: 0.95rem; }
         .remove-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; margin-left: 10px; }
@@ -129,7 +134,7 @@
 
     <header>
         <div>
-            <h1>Wholesale Hub <span style="background:#25D366;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:4px;vertical-align:middle;">v4 · FIXED</span></h1>
+            <h1>Wholesale Hub <span style="background:#25D366;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:4px;vertical-align:middle;">v5</span></h1>
             <p>Add products to your order summary and submit via WhatsApp</p>
         </div>
         <button class="pdf-btn" onclick="downloadPDF()">📄 Download PDF Catalogue</button>
@@ -432,5 +437,5 @@
 
         window.onload = loadProducts;
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a12ebb923b22e30c',t:'MTc4MjY3MTExMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
