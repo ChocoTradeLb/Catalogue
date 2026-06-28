@@ -83,18 +83,6 @@
         
         <select class="filter-select" id="brandFilter" onchange="filterProducts()">
             <option value="all">All Brands</option>
-            <option value="Kinder">Kinder</option>
-            <option value="Nutella">Nutella</option>
-            <option value="PureHydrate">PureHydrate</option>
-            <option value="ChocoCo">ChocoCo</option>
-            <option value="CocoaDelight">CocoaDelight</option>
-            <option value="VelvetBars">VelvetBars</option>
-            <option value="SweetTreats">SweetTreats</option>
-            <option value="SugarRush">SugarRush</option>
-            <option value="GummyKingdom">GummyKingdom</option>
-            <option value="CrunchTime">CrunchTime</option>
-            <option value="Salteez">Salteez</option>
-            <option value="BakeHouse">BakeHouse</option>
         </select>
     </div>
 
@@ -123,7 +111,11 @@
         async function loadProducts() {
             try {
                 const response = await fetch('products.csv');
-                const data = await response.text();
+                // The CSV is saved in Windows-1252 / Latin-1 encoding (e.g. accented
+                // characters like È). Decode it accordingly so brand and product names
+                // don't turn into replacement characters.
+                const buffer = await response.arrayBuffer();
+                const data = new TextDecoder('windows-1252').decode(buffer);
                 
                 const rows = data.split('\n').map(row => row.trim()).filter(row => row.length > 0);
                 
@@ -142,11 +134,35 @@
                     };
                 });
 
+                populateBrandFilter(products);
                 renderProducts(products);
             } catch (error) {
                 document.getElementById('products-container').innerText = "Failed to synchronize product database.";
                 console.error(error);
             }
+        }
+
+        // Build the brand dropdown dynamically from the CSV every time the page loads
+        function populateBrandFilter(items) {
+            const brandSelect = document.getElementById('brandFilter');
+
+            // Reset to only the default "All Brands" option (clears any stale entries)
+            brandSelect.innerHTML = '<option value="all">All Brands</option>';
+
+            // Collect unique, non-empty brand names from the CSV
+            const brands = [...new Set(
+                items.map(p => p.brand).filter(b => b && b.length > 0)
+            )];
+
+            // Sort alphabetically (case-insensitive) for a tidy list
+            brands.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+            brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                brandSelect.appendChild(option);
+            });
         }
 
         function filterProducts() {
