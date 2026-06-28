@@ -1,8 +1,8 @@
 id,name,price,description,badge,category,brand,image
-1,BUENO CHOCO,$0.70 ,KINDER BUENO CHOCO 39G*30,HOT SALE,Snacks,Kinder,image0244.jpg
-2,BUENO WHITE,$0.70 ,KINDER BUENO WHITE 39G*30,,Candies,Kinder,image0245.jpg
-3,4FINGER,$0.90 ,KINDER 4FINGER 50G*20,HOT SALE,Candies,Kinder,image0246.jpg
-4,DELICE PCK OF 10,$5.75 ,KINDER DELICE PCK OF 10,,Drinks,Kinder,image0247.jpg
+1,BUENO CHOCO,$0.70,KINDER BUENO CHOCO 39G*30,HOT SALE,Snacks,Kinder,image0244.jpg
+2,BUENO WHITE,$0.70,KINDER BUENO WHITE 39G*30,,Candies,Kinder,image0245.jpg
+3,4FINGER,$0.90,KINDER 4FINGER 50G*20,HOT SALE,Candies,Kinder,image0246.jpg
+4,DELICE PCK OF 10,$5.75,KINDER DELICE PCK OF 10,,Drinks,Kinder,image0247.jpg
 5,TRIS 5PACK,$4.75 ,KINDER TRIS 5PACK,,Candies,Kinder,image0248.jpg
 6,CARDS*5,$2.99 ,KINDER CARDS*5,,Candies,Kinder,image0249.jpg
 7,HAPPY HIPPO CHOCO,$0.56 ,KINDER HAPPY HIPPO CHOCO 20.7G*28,,Candies,Kinder,image0250.jpg
@@ -33,7 +33,7 @@ id,name,price,description,badge,category,brand,image
 32,CRISPY,$0.68 ,M&M CRISPY 36G*24,,Candies,M&M'S,image0204.jpg
 33,CHOCO BROWNIE 6PCK,$3.00 ,MILKA CHOCO BROWNIE 6PCK 150G,,Candies,Milka,image0205.jpg
 34,CHOCO MINI COOKIES,$3.00 ,MILKA CHOCO MINI COOKIES 110G*8,,Snacks,Milka,image0206.jpg
-35,CHOCO CRÈME,$2.35 ,MILKA CHOCO CRÈME 260G*18,,Drinks,Milka,image0207.jpg
+35,CHOCO CRÃˆME,$2.35 ,MILKA CHOCO CRÃˆME 260G*18,,Drinks,Milka,image0207.jpg
 36,CHOCO STICK,$1.65 ,MILKA CHOCO STICK 112G*20,HOT SALE,Snacks,Milka,image0208.jpg
 37,CHOCO BISCUITS,$2.50 ,MILKA CHOCO BISCUITS 175G*12,,Candies,Milka,image0209.jpg
 38,CHOC & CHO,$2.50 ,MILKA CHOC & CHO 175G*12,,Chocolates,Milka,image0210.jpg
