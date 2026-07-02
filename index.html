@@ -2,12 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Wholesale Catalog Storefront</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Wholesale Hub</title>
+
+    <!-- ===== PWA (installable app) setup ===== -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#25D366">
+    <meta name="mobile-web-app-capable" content="yes">
+    <!-- iOS home-screen app support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Wholesale Hub">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="icons/favicon-48.png">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- ===== OneSignal push notifications (free manual dashboard) ===== -->
+    <!-- SETUP: replace YOUR_ONESIGNAL_APP_ID below with the App ID from your
+         OneSignal dashboard (see the SETUP-GUIDE file for step-by-step). -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "YOUR_ONESIGNAL_APP_ID",
+                allowLocalhostAsSecureOrigin: true
+            });
+        });
+    </script>
     <style>
         :root {
             --primary: #25D366; 
@@ -25,6 +48,13 @@
 
         .pdf-btn { background: var(--blue); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .pdf-btn:hover { background: #0062cc; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .notify-btn { background: var(--primary); }
+        .notify-btn:hover { background: #20ba5a; }
+        .notify-btn.enabled { background: #888; }
+        .install-btn { background: var(--dark); }
+        .install-btn:hover { background: #000; }
+        @media (max-width: 768px) { .header-actions { width: 100%; } .header-actions .pdf-btn { flex: 1; justify-content: center; } }
 
         /* Filter Controls */
         .filter-bar { display: flex; gap: 15px; flex-wrap: wrap; }
@@ -134,10 +164,14 @@
 
     <header>
         <div>
-            <h1>Wholesale Hub </h1>
+            <h1>Wholesale Hub <span style="background:#25D366;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:4px;vertical-align:middle;">v5</span></h1>
             <p>Add products to your order summary and submit via WhatsApp</p>
         </div>
-        <button class="pdf-btn" onclick="downloadPDF()">📄 Download PDF Catalogue</button>
+        <div class="header-actions">
+            <button class="pdf-btn notify-btn" id="notifyBtn" onclick="enableNotifications()">🔔 Enable Alerts</button>
+            <button class="pdf-btn install-btn" id="installBtn" onclick="installApp()" style="display:none;">⬇️ Install App</button>
+            <button class="pdf-btn" onclick="downloadPDF()">📄 Download PDF Catalogue</button>
+        </div>
     </header>
 
     <div class="main-layout">
@@ -435,7 +469,80 @@
             html2pdf().from(element).set(config).save();
         }
 
+        // ===================== PWA: SERVICE WORKER =====================
+        // Registers the service worker that makes the site installable & works offline.
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(() => console.log('Service worker registered'))
+                    .catch(err => console.warn('Service worker failed:', err));
+            });
+        }
+
+        // ===================== PWA: INSTALL BUTTON =====================
+        // Android/Chrome fires this event when the app can be installed.
+        let deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            const btn = document.getElementById('installBtn');
+            if (btn) btn.style.display = 'flex';
+        });
+
+        function installApp() {
+            if (!deferredInstallPrompt) {
+                // iOS or already installed: show manual instructions
+                alert("To install:\n\n• On iPhone (Safari): tap the Share button, then 'Add to Home Screen'.\n• On Android (Chrome): tap the ⋮ menu, then 'Install app' / 'Add to Home screen'.");
+                return;
+            }
+            deferredInstallPrompt.prompt();
+            deferredInstallPrompt.userChoice.finally(() => {
+                deferredInstallPrompt = null;
+                const btn = document.getElementById('installBtn');
+                if (btn) btn.style.display = 'none';
+            });
+        }
+
+        // Hide the install button once the app is installed
+        window.addEventListener('appinstalled', () => {
+            const btn = document.getElementById('installBtn');
+            if (btn) btn.style.display = 'none';
+        });
+
+        // ===================== PUSH NOTIFICATIONS (OneSignal) =====================
+        // Prompts the customer to allow notifications so you can send them
+        // "new arrivals" and "offers" from the OneSignal dashboard.
+        function enableNotifications() {
+            if (!window.OneSignalDeferred) {
+                alert("Notifications are still loading, please try again in a moment.");
+                return;
+            }
+            OneSignalDeferred.push(async function(OneSignal) {
+                try {
+                    await OneSignal.Notifications.requestPermission();
+                    updateNotifyButton();
+                } catch (e) {
+                    console.warn(e);
+                }
+            });
+        }
+
+        function updateNotifyButton() {
+            const btn = document.getElementById('notifyBtn');
+            if (!btn || !window.OneSignalDeferred) return;
+            OneSignalDeferred.push(function(OneSignal) {
+                const permission = OneSignal.Notifications.permission; // true if granted
+                if (permission) {
+                    btn.textContent = '✅ Alerts On';
+                    btn.classList.add('enabled');
+                }
+            });
+        }
+
+        window.addEventListener('load', () => setTimeout(updateNotifyButton, 2000));
+
         window.onload = loadProducts;
     </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a14e4b17fab2704e',t:'MTc4MzAwMjA0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
