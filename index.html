@@ -26,7 +26,7 @@
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         OneSignalDeferred.push(async function(OneSignal) {
             await OneSignal.init({
-                appId: "aca377e7-fb3f-4b87-9c6e-e12baa350591",
+                appId: "85e89e61-903b-443a-aaae-3147fe638a24",
                 allowLocalhostAsSecureOrigin: true
             });
         });
@@ -164,7 +164,7 @@
 
     <header>
         <div>
-            <h1>Wholesale Hub <span style="background:#25D366;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:4px;vertical-align:middle;">v5</span></h1>
+            <h1>Wholesale Hub</h1>
             <p>Add products to your order summary and submit via WhatsApp</p>
         </div>
         <div class="header-actions">
@@ -512,9 +512,32 @@
         // ===================== PUSH NOTIFICATIONS (OneSignal) =====================
         // Prompts the customer to allow notifications so you can send them
         // "new arrivals" and "offers" from the OneSignal dashboard.
+
+        // The App ID configured at the top of this file (used for a friendly warning
+        // if it hasn't been replaced yet).
+        function isAppIdConfigured() {
+            const scripts = document.documentElement.innerHTML;
+            return !scripts.includes('YOUR_ONESIGNAL_APP_ID');
+        }
+
         function enableNotifications() {
+            // Common failure #1: app not served over https (required by browsers)
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+                alert("⚠️ Notifications need a secure (https) address.\n\nOpen the app from your GitHub Pages https link, not from a file on your phone.");
+                return;
+            }
+            // Common failure #2: forgot to paste the OneSignal App ID
+            if (!isAppIdConfigured()) {
+                alert("⚠️ Setup not finished.\n\nThe OneSignal App ID hasn't been added yet. See SETUP-GUIDE.md, step 2.");
+                return;
+            }
+            // Common failure #3: browser blocked notifications before
+            if (typeof Notification !== 'undefined' && Notification.permission === 'denied') {
+                alert("🔕 Notifications are blocked for this site.\n\nOn your phone: open browser Site Settings for this page and set Notifications to 'Allow', then try again.");
+                return;
+            }
             if (!window.OneSignalDeferred) {
-                alert("Notifications are still loading, please try again in a moment.");
+                alert("Notifications are still loading, please wait a moment and try again.");
                 return;
             }
             OneSignalDeferred.push(async function(OneSignal) {
@@ -522,7 +545,8 @@
                     await OneSignal.Notifications.requestPermission();
                     updateNotifyButton();
                 } catch (e) {
-                    console.warn(e);
+                    console.warn('OneSignal permission error:', e);
+                    alert("Something went wrong requesting permission. Make sure the app is opened from its https link.");
                 }
             });
         }
@@ -531,11 +555,13 @@
             const btn = document.getElementById('notifyBtn');
             if (!btn || !window.OneSignalDeferred) return;
             OneSignalDeferred.push(function(OneSignal) {
-                const permission = OneSignal.Notifications.permission; // true if granted
-                if (permission) {
-                    btn.textContent = '✅ Alerts On';
-                    btn.classList.add('enabled');
-                }
+                try {
+                    const permission = OneSignal.Notifications.permission; // true if granted
+                    if (permission) {
+                        btn.textContent = '✅ Alerts On';
+                        btn.classList.add('enabled');
+                    }
+                } catch (e) { /* SDK not ready yet */ }
             });
         }
 
@@ -543,6 +569,6 @@
 
         window.onload = loadProducts;
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a14e4b17fab2704e',t:'MTc4MzAwMjA0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a14f02abca3de19c',t:'MTc4MzAwOTU2OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
